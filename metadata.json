@@ -1,0 +1,8 @@
+{
+  "name": "Copy of נדיה - Nadia Premium Platform",
+  "description": "פלטפורמה בטוחה ודיסקרטית לנשים וגברים המתמודדים עם מערכות יחסים רעילות ונרקיסיסטיות, המשלבת כלי AI מתקדמים לתמיכה וסימולציה.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
