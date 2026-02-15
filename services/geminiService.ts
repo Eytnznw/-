@@ -26,6 +26,7 @@ export const generateAIChatResponse = async (
   mode: ChatMode,
   history: { role: "user" | "model"; parts: { text: string }[] }[]
 ) => {
+  // Initialize AI inside the function to ensure process.env.API_KEY is available at runtime
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   try {
@@ -42,7 +43,7 @@ export const generateAIChatResponse = async (
       }
     });
 
-    return response.text;
+    return response.text || "לא הצלחתי להפיק תגובה, אנא נסי שוב.";
   } catch (error) {
     console.error("Gemini API Error:", error);
     return "מצטערת, חלה שגיאה בחיבור לשרת. אנא נסי שוב מאוחר יותר.";

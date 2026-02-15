@@ -37,18 +37,37 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
       }
+      
+      /* Simple fade in animation */
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
     </style>
-  <script type="importmap">
+    <script type="importmap">
 {
   "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4",
-    "@google/genai": "https://esm.sh/@google/genai@^1.41.0"
+    "react": "https://esm.sh/react@19.0.0",
+    "react/": "https://esm.sh/react@19.0.0/",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "@google/genai": "https://esm.sh/@google/genai@1.41.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
   }
 }
 </script>
-</head>
+    <script>
+      // Global error handler to help diagnose white screen issues
+      window.onerror = function(message, source, lineno, colno, error) {
+        console.error("Global error caught:", message, "at", source, ":", lineno);
+        // We don't want to show an alert to the user in production, 
+        // but for debugging a white screen it's very helpful.
+      };
+    </script>
+  </head>
   <body>
     <div id="root"></div>
   </body>
