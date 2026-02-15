@@ -24,6 +24,11 @@ const Research: React.FC = () => {
     }
   };
 
+  const openInGoogle = () => {
+    if (!query.trim()) return;
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+  };
+
   return (
     <div className="max-w-4xl mx-auto animate-fade-in space-y-8 pb-12">
       <div className="text-center">
@@ -33,21 +38,36 @@ const Research: React.FC = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">
-        <input 
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="למשל: 'מחקרים חדשים על החלמה מטראומה נרקיסיסטית'..."
-          className="w-full bg-white border-2 border-indigo-100 px-6 py-4 rounded-2xl shadow-lg focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-lg transition-all"
-        />
-        <button 
-          type="submit"
-          disabled={!query.trim() || isSearching}
-          className="absolute left-2 top-2 bottom-2 px-6 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-md disabled:opacity-50"
-        >
-          {isSearching ? 'מחפש...' : 'חפשי בגוגל'}
-        </button>
-      </form>
+      <div className="space-y-4">
+        <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">
+          <input 
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="למשל: 'מחקרים חדשים על החלמה מטראומה נרקיסיסטית'..."
+            className="w-full bg-white border-2 border-indigo-100 px-6 py-4 rounded-2xl shadow-lg focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-lg transition-all"
+          />
+          <button 
+            type="submit"
+            disabled={!query.trim() || isSearching}
+            className="absolute left-2 top-2 bottom-2 px-6 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-md disabled:opacity-50"
+          >
+            {isSearching ? 'מחפש...' : 'חפשי בנדיה'}
+          </button>
+        </form>
+        
+        <div className="flex justify-center">
+            <button 
+              onClick={openInGoogle}
+              disabled={!query.trim()}
+              className="text-sm text-indigo-600 font-medium hover:underline flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.908 3.152-1.848 4.092-1.12 1.12-2.88 2.32-6 2.32-4.84 0-8.72-3.92-8.72-8.72s3.88-8.72 8.72-8.72c2.6 0 4.504 1.024 5.904 2.344l2.304-2.304C18.416 1.136 15.704 0 12.48 0 5.856 0 0 5.856 0 12.48s5.856 12.48 12.48 12.48c3.6 0 6.32-1.184 8.44-3.4 2.16-2.16 2.84-5.216 2.84-7.664 0-.72-.064-1.408-.192-2.08h-11.088z"/>
+              </svg>
+              פתח תוצאות חיפוש גולמיות בגוגל
+            </button>
+        </div>
+      </div>
 
       {result && (
         <div className="space-y-6 animate-fade-in-up">

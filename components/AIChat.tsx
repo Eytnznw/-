@@ -3,6 +3,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Message, ChatMode, AppSection } from '../types';
 import { generateAIChatResponse } from '../services/geminiService';
 
+interface MessageWithSources extends Message {
+  sources?: { title: string; uri: string }[];
+}
+
 interface AIChatProps {
   chatCount: number;
   isPremium: boolean;
@@ -11,7 +15,7 @@ interface AIChatProps {
 }
 
 const AIChat: React.FC<AIChatProps> = ({ chatCount, isPremium, onMessageSent, onNavigate }) => {
-  const [messages, setMessages] = useState<Message[]>(() => {
+  const [messages, setMessages] = useState<MessageWithSources[]>(() => {
     const saved = localStorage.getItem('nadia_chat_history');
     if (saved) {
       try {
@@ -44,7 +48,7 @@ const AIChat: React.FC<AIChatProps> = ({ chatCount, isPremium, onMessageSent, on
     if (e) e.preventDefault();
     if (!input.trim() || isTyping || isLimitReached) return;
 
-    const userMessage: Message = {
+    const userMessage: MessageWithSources = {
       id: Date.now().toString(),
       role: 'user',
       text: input,
@@ -61,12 +65,13 @@ const AIChat: React.FC<AIChatProps> = ({ chatCount, isPremium, onMessageSent, on
       parts: [{ text: m.text }]
     }));
 
-    const responseText = await generateAIChatResponse(input, mode, history);
+    const response = await generateAIChatResponse(input, mode, history);
 
-    const modelMessage: Message = {
+    const modelMessage: MessageWithSources = {
       id: (Date.now() + 1).toString(),
       role: 'model',
-      text: responseText,
+      text: response.text,
+      sources: response.sources,
       timestamp: new Date()
     };
 
@@ -106,7 +111,7 @@ const AIChat: React.FC<AIChatProps> = ({ chatCount, isPremium, onMessageSent, on
         className={`flex-1 overflow-y-auto space-y-4 p-6 glass-panel rounded-t-3xl border-b-0 shadow-inner bg-white/40 relative ${isLimitReached ? 'blur-[1px]' : ''}`}
       >
         {messages.map((msg) => (
-          <div key={msg.id} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div key={msg.id} className={`flex flex-col w-full ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
             <div className={`max-w-[85%] px-5 py-3.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
                 msg.role === 'user' 
                 ? 'bg-indigo-600 text-white rounded-br-none' 
@@ -114,6 +119,23 @@ const AIChat: React.FC<AIChatProps> = ({ chatCount, isPremium, onMessageSent, on
             }`}>
               {msg.text}
             </div>
+            {msg.sources && msg.sources.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2 max-w-[80%]">
+                <span className="text-[10px] text-slate-400 w-full mb-1 mr-2">מקורות לקריאה נוספת:</span>
+                {msg.sources.slice(0, 3).map((source, idx) => (
+                  <a 
+                    key={idx} 
+                    href={source.uri} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-full border border-indigo-100 hover:bg-indigo-100 transition-colors truncate max-w-[150px]"
+                    title={source.title}
+                  >
+                    🔗 {source.title}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         ))}
         {isTyping && (

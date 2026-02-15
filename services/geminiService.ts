@@ -8,6 +8,7 @@ const SYSTEM_PROMPTS = {
 1. להקשיב ללא שיפוטיות.
 2. לתת שמות מקצועיים להתנהגויות (כמו גזלייטינג, הפצצת אהבה).
 3. להעצים את המשתמש ולחזק את תחושת המציאות שלו.
+4. השתמש בחיפוש גוגל כדי לספק מידע עדכני על זכויות משפטיות, מחקרים פסיכולוגיים חדשים או גופי סיוע.
 דבר בעברית רהוטה, תומכת וחמה.`,
   
   simulator: `אתה משחק תפקיד של 'נרקיסיסט' בסימולציה מתונה כדי לאפשר למשתמש לתרגל הצבת גבולות. 
@@ -15,11 +16,16 @@ const SYSTEM_PROMPTS = {
 בסוף כל תשובה הוסף שורה: '🧠 תרגול: נסה להציב גבול ברור'.`
 };
 
+export interface AIChatResponse {
+  text: string;
+  sources?: { title: string; uri: string }[];
+}
+
 export const generateAIChatResponse = async (
   message: string,
   mode: ChatMode,
   history: { role: "user" | "model"; parts: { text: string }[] }[]
-) => {
+): Promise<AIChatResponse> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   try {
@@ -31,14 +37,25 @@ export const generateAIChatResponse = async (
       ],
       config: {
         systemInstruction: SYSTEM_PROMPTS[mode],
+        tools: [{ googleSearch: {} }],
         temperature: 0.7,
       }
     });
 
-    return response.text || "לא הצלחתי להפיק תגובה.";
+    const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks
+      ?.map((chunk: any) => ({
+        title: chunk.web?.title || 'מקור',
+        uri: chunk.web?.uri || ''
+      }))
+      .filter((s: any) => s.uri) || [];
+
+    return {
+      text: response.text || "לא הצלחתי להפיק תגובה.",
+      sources: sources.length > 0 ? sources : undefined
+    };
   } catch (error) {
     console.error("Gemini Error:", error);
-    return "מצטערת, חלה שגיאה. אנא נסי שוב.";
+    return { text: "מצטערת, חלה שגיאה בחיבור לשרת. אנא נסי שוב." };
   }
 };
 
