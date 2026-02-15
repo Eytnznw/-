@@ -19,10 +19,7 @@ const App: React.FC = () => {
   const [isPremium, setIsPremium] = useState<boolean>(false);
 
   useEffect(() => {
-    // Initial loading animation
-    const timer = setTimeout(() => setIsLoading(false), 1500);
-    
-    // Load state from localStorage
+    // 1. Load critical state from localStorage instantly
     const savedCount = localStorage.getItem('nadia_chat_count');
     const lastDate = localStorage.getItem('nadia_last_chat_date');
     const savedPremium = localStorage.getItem('nadia_is_premium');
@@ -30,7 +27,6 @@ const App: React.FC = () => {
     const today = new Date().toDateString();
     
     if (lastDate !== today) {
-      // Reset daily count
       setChatCount(0);
       localStorage.setItem('nadia_chat_count', '0');
       localStorage.setItem('nadia_last_chat_date', today);
@@ -42,6 +38,12 @@ const App: React.FC = () => {
       setIsPremium(true);
     }
 
+    // 2. Hide loading screen immediately after state is ready
+    // We use requestAnimationFrame to ensure the first paint has happened
+    requestAnimationFrame(() => {
+      setIsLoading(false);
+    });
+
     // Panic ESC key handler
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -51,7 +53,6 @@ const App: React.FC = () => {
     
     window.addEventListener('keydown', handleKeyDown);
     return () => {
-      clearTimeout(timer);
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
@@ -75,11 +76,9 @@ const App: React.FC = () => {
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-[100]">
-        <div className="w-20 h-20 indigo-gradient rounded-3xl animate-bounce shadow-2xl flex items-center justify-center text-white text-4xl font-black">
+        <div className="w-16 h-16 indigo-gradient rounded-2xl animate-pulse shadow-2xl flex items-center justify-center text-white text-3xl font-black">
           N
         </div>
-        <h1 className="mt-6 text-2xl font-bold text-indigo-900 animate-pulse">NADIA</h1>
-        <p className="mt-2 text-slate-400">יוצרים סביבה בטוחה...</p>
       </div>
     );
   }
@@ -105,14 +104,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col pb-20 sm:pb-8">
+    <div className="min-h-screen flex flex-col pb-20 sm:pb-8 animate-fade-in">
       <Header 
         currentSection={currentSection} 
         setSection={setCurrentSection} 
         isPremium={isPremium}
       />
       
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-8 py-8 md:py-12">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-8 py-4 md:py-8">
         {renderSection()}
       </main>
 
@@ -130,10 +129,8 @@ const App: React.FC = () => {
         </svg>
       </button>
 
-      {/* Footer / Safety Notice */}
-      <footer className="w-full text-center py-8 text-slate-400 text-sm">
+      <footer className="w-full text-center py-6 text-slate-400 text-xs">
         <p>© 2024 NADIA - הפלטפורמה הבטוחה שלך. הכל אנונימי ודיסקרטי.</p>
-        <p className="mt-2">במקרה של סכנה מיידית, התקשרו 100.</p>
       </footer>
     </div>
   );
