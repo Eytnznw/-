@@ -1,6 +1,6 @@
 
 import { GoogleGenAI } from "@google/genai";
-import { ChatMode } from "../types";
+import { ChatMode, ResearchResult } from "../types";
 
 const SYSTEM_PROMPTS = {
   support: `אתה נדיה, עוזרת בינה מלאכותית אמפתית ומקצועית המיועדת לתמוך באנשים במערכות יחסים רעילות ונרקיסיסטיות.
@@ -39,5 +39,37 @@ export const generateAIChatResponse = async (
   } catch (error) {
     console.error("Gemini Error:", error);
     return "מצטערת, חלה שגיאה. אנא נסי שוב.";
+  }
+};
+
+export const performWebResearch = async (query: string): Promise<ResearchResult> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: `בצע מחקר מעמיק ומצא מידע עדכני מהרשת על הנושא הבא: ${query}. 
+      התמקד במקורות מהימנים, מאמרים פסיכולוגיים וחדשות רלוונטיות. 
+      הצג סיכום ברור ומועיל בעברית.`,
+      config: {
+        tools: [{ googleSearch: {} }],
+        temperature: 0.2,
+      },
+    });
+
+    const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks
+      ?.map((chunk: any) => ({
+        title: chunk.web?.title || 'מקור מידע',
+        uri: chunk.web?.uri || ''
+      }))
+      .filter((s: any) => s.uri) || [];
+
+    return {
+      text: response.text || "לא נמצא מידע רלוונטי.",
+      sources: sources
+    };
+  } catch (error) {
+    console.error("Research Error:", error);
+    throw error;
   }
 };

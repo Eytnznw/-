@@ -8,6 +8,7 @@ import Glossary from './components/Glossary';
 import Resources from './components/Resources';
 import Contact from './components/Contact';
 import Pricing from './components/Pricing';
+import Research from './components/Research';
 import { AppSection } from './types';
 
 const App: React.FC = () => {
@@ -39,7 +40,6 @@ const App: React.FC = () => {
     }
 
     // 2. Hide loading screen immediately after state is ready
-    // We use requestAnimationFrame to ensure the first paint has happened
     requestAnimationFrame(() => {
       setIsLoading(false);
     });
@@ -94,6 +94,7 @@ const App: React.FC = () => {
           onNavigate={setCurrentSection}
         />
       );
+      case AppSection.Research: return <Research />;
       case AppSection.Quiz: return <Quiz />;
       case AppSection.Glossary: return <Glossary />;
       case AppSection.Resources: return <Resources />;

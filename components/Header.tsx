@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({ currentSection, setSection, isPremium }
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-6 text-indigo-950 font-medium">
+        <div className="hidden lg:flex items-center gap-6 text-indigo-950 font-medium">
           <button 
             onClick={() => setSection(AppSection.Dashboard)}
             className={`transition-colors hover:text-indigo-600 ${currentSection === AppSection.Dashboard ? 'text-indigo-600 font-bold underline underline-offset-4' : ''}`}
@@ -37,6 +37,12 @@ const Header: React.FC<HeaderProps> = ({ currentSection, setSection, isPremium }
             className={`transition-colors hover:text-indigo-600 ${currentSection === AppSection.AIChat ? 'text-indigo-600 font-bold underline underline-offset-4' : ''}`}
           >
             צ'אט AI
+          </button>
+          <button 
+            onClick={() => setSection(AppSection.Research)}
+            className={`transition-colors hover:text-indigo-600 ${currentSection === AppSection.Research ? 'text-indigo-600 font-bold underline underline-offset-4' : ''}`}
+          >
+            מחקר מהרשת
           </button>
           <button 
             onClick={() => setSection(AppSection.Quiz)}
@@ -67,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({ currentSection, setSection, isPremium }
           </button>
           <button 
             onClick={() => setSection(AppSection.Resources)}
-            className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors md:hidden"
+            className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors lg:hidden"
             title="עזרה דחופה"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -5,6 +5,7 @@ export enum AppSection {
   Quiz = 'quiz',
   Glossary = 'glossary',
   Resources = 'resources',
+  Research = 'research',
   NarcissismTypes = 'types',
   Stories = 'stories',
   Contact = 'contact',
@@ -18,6 +19,16 @@ export interface Message {
   role: 'user' | 'model';
   text: string;
   timestamp: Date;
+}
+
+export interface GroundingSource {
+  title: string;
+  uri: string;
+}
+
+export interface ResearchResult {
+  text: string;
+  sources: GroundingSource[];
 }
 
 export interface GlossaryItem {
